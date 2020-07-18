@@ -9,6 +9,15 @@
 			console.log("Connecting to ws://localhost:" + (8000 + i))
 			socket = new WebSocket('ws://localhost:' + (8000 + i));
 
+			// Connection opened
+			socket.addEventListener('open', function (event) {
+				buffer = new ArrayBuffer(4);
+				int_buf = new Uint32Array(buffer);
+				url = new String(event.currentTarget.url)
+				int_buf[0] = url[url.length - 2]
+				event.currentTarget.send(buffer);
+			});
+
 			// Listen for messages
 			socket.addEventListener('message', function (event) {
 			    console.log('Message from server ', event.data);
@@ -23,21 +32,50 @@
 			sockets.push(socket)
 		}
 
+		// Encode state into a binary buffer
+		function encode_state(index) {
+			buffer = new ArrayBuffer(16);
+			int_buf = new Uint16Array(buffer);
+
+			int_buf[0] = index | 0x8000 // Index, command ID
+			int_buf[1] = 12 // Length
+
+			int_buf[2] = 0 // Joystick 1 X Value
+			int_buf[3] = 0 // Joystick 1 Y Value
+			int_buf[4] = 0 // Joystick 2 X Value
+			int_buf[5] = 0 // Joystick 2 Y Value
+
+			int_buf[6] = 0 // Button state
+			for (var i = 0; i < 2; i++) {
+				button_input = document.getElementById("button" + i)
+				if (button_input.checked) {
+					int_buf[6] |= 1 << i
+				}
+			}
+
+			return buffer
+		}
+
 		// Handler for when send button is clicked
 		function on_send() {
 			console.log("on_send")
 			port_input = document.getElementById("port-number")
 			message_input = document.getElementById("message")
-			
-			sockets[port_input.value].send(message_input.value)
+
+			sockets[port_input.value].send(encode_state(port_input.value))
 		}
 	</script>
 </head>
 <body>
 	<label for="port-number">Port number:</label>
 	<input type="number" id="port-number" name="port-number" min="0" max="1">
-	<label for="message">Message:</label>
-	<input type="text" id="message" name="message">
+	
+	<input type="checkbox" id="button0" name="button0">
+	<label for="button0">Button 0</label>
+
+	<input type="checkbox" id="button1" name="button1">
+	<label for="button1">Button 1</label>
+
 	<div id="display"></div>
 	<button type="button" onclick="on_send()">Send</button>
 </body>

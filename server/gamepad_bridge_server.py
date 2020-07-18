@@ -11,12 +11,10 @@ class WSServer:
             server_port = websocket.local_address[1]
             print(server_port, "received", message, "from", websocket.remote_address[0])
 
-            response = "Received " + message
-
             # Append the received message to the queue
             await self.message_queue.put((server_port, message))
 
-            await websocket.send(response)
+            await websocket.send(message)
 
     def start(self, num_controllers, base_port):
         for i in range(num_controllers):
@@ -28,7 +26,7 @@ class WSServer:
 # of the server threads, to avoid races over the serial output
 async def queue_handler(queue, outfilepath):
     print("queue_handler started")
-    with open(outfilepath, 'w') as outfile:
+    with open(outfilepath, 'wb') as outfile:
         while True:
             index, message = await queue.get()
             print("Dequeued message", message, "for index", index)
