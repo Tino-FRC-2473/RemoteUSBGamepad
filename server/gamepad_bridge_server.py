@@ -34,6 +34,13 @@ async def queue_handler(queue, serial_port, baud=115200):
             ser.write(message)
             queue.task_done()
 
+async def dummy_queue_handler(queue):
+    print("queue_handler started")
+    while True:
+        index, message = await queue.get()
+        print("Dequeued message", message, "for index", index)
+        queue.task_done()
+
 if __name__ == '__main__':
     import argparse
 
@@ -41,6 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--num-controllers', type=int, default=2, help='Number of controllers to listen for')
     parser.add_argument('--base-port', '-p', type=int, default=8000, help='Base port number for 0th controller. Other controllers will have servers attached to port base+id')
     parser.add_argument('--baud', type=int, default=115200, help='Serial port baud rate')
+    parser.add_argument('--dummy-serial', action="store_true", help='Use dummy handler instead of real serial port')
     parser.add_argument('serial_port', help="Serial port to output commands")
 
     args = parser.parse_args()
@@ -50,5 +58,8 @@ if __name__ == '__main__':
     server = WSServer(queue)
     server.start(args.num_controllers, args.base_port)
 
-    asyncio.get_event_loop().run_until_complete(queue_handler(queue, args.serial_port, args.baud))
+    if args.dummy_serial:
+        asyncio.get_event_loop().run_until_complete(dummy_queue_handler(queue))
+    else:
+        asyncio.get_event_loop().run_until_complete(queue_handler(queue, args.serial_port, args.baud))
     asyncio.get_event_loop().run_forever()

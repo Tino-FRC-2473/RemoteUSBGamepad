@@ -3,11 +3,11 @@
 <head>
 	<title>Remote USB Gamepad Client</title>
 	<script>
-		// Store all websockets in global array
-		sockets = new Array()
-		for (var i = 0; i < 2; i++) {
-			console.log("Connecting to ws://localhost:" + (8000 + i))
-			socket = new WebSocket('ws://localhost:' + (8000 + i));
+		socket = null;
+		function on_connect() {
+			address_input = document.getElementById('server-addr')
+			console.log("Connecting to " + address_input.value)
+			socket = new WebSocket(address_input.value);
 
 			// Connection opened
 			socket.addEventListener('open', function (event) {
@@ -16,20 +16,19 @@
 				url = new String(event.currentTarget.url)
 				int_buf[0] = url[url.length - 2]
 				event.currentTarget.send(buffer);
+
+				document.getElementById('display').innerText = "Connected!"
 			});
 
 			// Listen for messages
 			socket.addEventListener('message', function (event) {
 			    console.log('Message from server ', event.data);
-			    display.innerHTML=event.data;
 			});
 
 			// Listen for socket closure
 			socket.addEventListener('onclose', function (event) {
-			    console.log("Socket " + (8000 + i) + " closed")
+			    console.log("Socket " + socket.url + " closed")
 			});
-
-			sockets.push(socket)
 		}
 
 		// Encode state into a binary buffer
@@ -62,12 +61,15 @@
 			port_input = document.getElementById("port-number")
 			message_input = document.getElementById("message")
 
-			sockets[port_input.value].send(encode_state(port_input.value))
+			socket.send(encode_state(port_input.value))
 		}
 	</script>
 </head>
 <body>
-	<label for="port-number">Port number:</label>
+	<label for="server-addr">Server address:</label>
+	<input type="url" id="server-addr" name="server-addr" pattern="ws://.+" placeholder="ws://localhost:8000">
+
+	<label for="port-number">Index:</label>
 	<input type="number" id="port-number" name="port-number" min="0" max="1">
 	
 	<input type="checkbox" id="button0" name="button0">
@@ -76,7 +78,8 @@
 	<input type="checkbox" id="button1" name="button1">
 	<label for="button1">Button 1</label>
 
-	<div id="display"></div>
+	<div id="display">Disconnected</div>
+	<button type="button" onclick="on_connect()">Connect</button>
 	<button type="button" onclick="on_send()">Send</button>
 </body>
 </html>
