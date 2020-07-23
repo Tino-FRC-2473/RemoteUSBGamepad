@@ -2,7 +2,9 @@
 Bridge USB gamepad over IP to enable FTC remote operation
 
 ## Setup
-This project uses pipenv to manage dependencies. Run server script with `pipenv run python3 server/gamepad_bridge_server.py test.txt`, open client HTML in a browser.
+This project uses pipenv to manage dependencies. Run `pipenv install` on first clone to download and install Python dependencies.
+
+Run server script with `pipenv run python3 server/gamepad_bridge_server.py test.txt`, open client HTML in a browser.
 
 ## Protocol
 The same binary message format will be used over the Websocket and serial connection. We shall use little-endian byte order to match the Arduino/ARM processor convention. All messages start with the following header:
