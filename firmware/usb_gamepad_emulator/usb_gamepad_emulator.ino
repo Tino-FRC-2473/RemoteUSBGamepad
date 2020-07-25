@@ -40,8 +40,21 @@ void send_gamepad_update() {
 	Joystick.Zrotate(INT16_TO_UINT10(current_state.joystick2_x));
 	Joystick.Z(INT16_TO_UINT10(current_state.joystick2_y));
 
+	Serial.print("Joystick1 X: ");
+	Serial.println(INT16_TO_UINT10(current_state.joystick1_x));
+	Serial.print("Joystick1 Y: ");
+	Serial.println(INT16_TO_UINT10(current_state.joystick1_y));
+	Serial.print("Joystick2 X: ");
+	Serial.println(INT16_TO_UINT10(current_state.joystick2_x));
+	Serial.print("Joystick2 Y: ");
+	Serial.println(INT16_TO_UINT10(current_state.joystick2_y));
+
 	for (uint8_t i = 0; i < 16; i++) {
 		Joystick.button(i + 1, current_state.button_state & (1 << i));
+		Serial.print("Button ");
+		Serial.print(i);
+		Serial.print(" = ");
+		Serial.println((current_state.button_state & (1 << i)) ? "true" : "false");
 	}
 
 	Joystick.send_now();
@@ -101,6 +114,8 @@ void handle_command(uint8_t *buf) {
 
 /* ============= Entrypoint Functions ============= */
 void setup() {
+	Serial.begin();
+	
 	memset(&current_state, 0, sizeof(JoystickState_t));
 	
 	Joystick.useManualSend(true);
@@ -131,6 +146,7 @@ void loop() {
 			SERIAL_PORT.clear();
 			return;
 		}
+		Serial.println("Valid header");
 		
 		// Read in command body
 		while (SERIAL_PORT.available() < header->length) {
