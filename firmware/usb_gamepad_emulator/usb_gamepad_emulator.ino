@@ -114,7 +114,7 @@ void handle_command(uint8_t *buf) {
 
 /* ============= Entrypoint Functions ============= */
 void setup() {
-	Serial.begin();
+	Serial.begin(115200);
 	
 	memset(&current_state, 0, sizeof(JoystickState_t));
 	
@@ -143,6 +143,7 @@ void loop() {
 		header = (CommandHeader_t *)recv_buf;
 		if (!is_header_valid(header)) {
 			// Likely corrupted message or garbage data
+			Serial.println("Invalid header!");
 			SERIAL_PORT.clear();
 			return;
 		}

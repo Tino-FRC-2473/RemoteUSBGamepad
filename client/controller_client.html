@@ -45,7 +45,7 @@
 			int_buf[5] = 0 // Joystick 2 Y Value
 
 			int_buf[6] = 0 // Button state
-			for (var i = 0; i < 2; i++) {
+			for (var i = 0; i < 7; i++) {
 				button_input = document.getElementById("button" + i)
 				if (button_input.checked) {
 					int_buf[6] |= 1 << i
@@ -77,6 +77,21 @@
 
 	<input type="checkbox" id="button1" name="button1">
 	<label for="button1">Button 1</label>
+
+	<input type="checkbox" id="button2" name="button2">
+	<label for="button1">Button 2</label>
+
+	<input type="checkbox" id="button3" name="button3">
+	<label for="button1">Button 3</label>
+
+	<input type="checkbox" id="button4" name="button4">
+	<label for="button1">Button 4</label>
+
+	<input type="checkbox" id="button5" name="button5">
+	<label for="button1">Button 5</label>
+
+	<input type="checkbox" id="button6" name="button6">
+	<label for="button1">Button 6</label>
 
 	<div id="display">Disconnected</div>
 	<button type="button" onclick="on_connect()">Connect</button>
