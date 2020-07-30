@@ -3,7 +3,14 @@
 <head>
 	<title>Remote USB Gamepad Client</title>
 	<script>
-		socket = null;
+		var socket = null;
+		var gamepad_state = {
+			last_update_time : 0,
+			button_state : 0,
+			axes : [0, 0, 0, 0],
+		};
+		var update_loop = null;
+
 		function on_connect() {
 			address_input = document.getElementById('server-addr')
 			console.log("Connecting to " + address_input.value)
@@ -17,17 +24,25 @@
 				int_buf[0] = url[url.length - 2]
 				event.currentTarget.send(buffer);
 
-				document.getElementById('display').innerText = "Connected!"
+				document.getElementById('socket_display').innerText = "Server Connected!"
 			});
 
 			// Listen for messages
 			socket.addEventListener('message', function (event) {
-			    console.log('Message from server ', event.data);
+			    //console.log('Message from server ', event.data);
 			});
 
 			// Listen for socket closure
 			socket.addEventListener('onclose', function (event) {
 			    console.log("Socket " + socket.url + " closed")
+			    document.getElementById('socket_display').innerText = "Server Disconnected"
+
+			    buffer = new ArrayBuffer(4);
+				int_buf = new Uint8Array(buffer);
+				url = new String(event.currentTarget.url)
+				int_buf[0] = url[url.length - 2]
+				int_buf[1] = 1
+				event.currentTarget.send(buffer);
 			});
 		}
 
@@ -39,62 +54,83 @@
 			int_buf[0] = index | 0x8000 // Index, command ID
 			int_buf[1] = 12 // Length
 
-			int_buf[2] = 0 // Joystick 1 X Value
-			int_buf[3] = 0 // Joystick 1 Y Value
-			int_buf[4] = 0 // Joystick 2 X Value
-			int_buf[5] = 0 // Joystick 2 Y Value
+			int_buf[2] = gamepad_state.axes[0] // Joystick 1 X Value
+			int_buf[3] = gamepad_state.axes[1] // Joystick 1 Y Value
+			int_buf[4] = gamepad_state.axes[2] // Joystick 2 X Value
+			int_buf[5] = gamepad_state.axes[3] // Joystick 2 Y Value
 
-			int_buf[6] = 0 // Button state
-			for (var i = 0; i < 7; i++) {
-				button_input = document.getElementById("button" + i)
-				if (button_input.checked) {
-					int_buf[6] |= 1 << i
-				}
-			}
+			int_buf[6] = gamepad_state.button_state // Button state
 
 			return buffer
 		}
 
-		// Handler for when send button is clicked
-		function on_send() {
-			console.log("on_send")
+		// Encode and send current controller state via Websocket
+		function send_state_report() {
 			port_input = document.getElementById("port-number")
-			message_input = document.getElementById("message")
 
-			socket.send(encode_state(port_input.value))
+			// Only send if socket is connected and ready
+			if (socket.readyState == 1)
+				socket.send(encode_state(port_input.value))
 		}
+
+		// Polling loop for gamepad state updates
+		function poll_gamepad() {
+			var gamepad = navigator.getGamepads()[0];
+
+			if (gamepad.timestamp == gamepad_state.last_update_time)
+				return;
+
+			gamepad_state.last_update_time = gamepad.timestamp;
+
+			gamepad_state.button_state = 0;
+			for (var i = 0; i < 16; i++) {
+				if (gamepad.buttons[i].value == 1) {
+					gamepad_state.button_state |= 1 << i
+				}
+			}
+
+			for (var i = 0; i < 4; i++) {
+				gamepad_state.axes[i] = Math.floor(gamepad.axes[i] * 32767)
+			}
+
+			document.getElementById("gamepad_display").innerText = "Axes: " + gamepad_state.axes.toString() + " Buttons: 0x" + gamepad_state.button_state.toString(16).padStart(4, "0");
+
+			send_state_report();
+		}
+
+		// Gamepad Setup
+		window.addEventListener("gamepadconnected", function(e) {
+			console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+				e.gamepad.index, e.gamepad.id,
+				e.gamepad.buttons.length, e.gamepad.axes.length);
+
+			document.getElementById("gamepad_status").innerText = "Gamepad connected!";
+
+			// Start update loop
+			update_loop = setInterval(poll_gamepad, 20)
+		});
+
+		window.addEventListener("gamepaddisconnected", function(e) {
+			console.log("Gamepad disconnected from index %d: %s",
+				e.gamepad.index, e.gamepad.id);
+
+			clearInterval(update_loop);
+			gamepad = null;
+			document.getElementById("gamepad_status").innerText = "Gamepad disconnected";
+		});
 	</script>
 </head>
 <body>
 	<label for="server-addr">Server address:</label>
-	<input type="url" id="server-addr" name="server-addr" pattern="ws://.+" placeholder="ws://localhost:8000">
+	<input type="url" id="server-addr" name="server-addr" pattern="ws://.+" value="ws://localhost:8000">
 
 	<label for="port-number">Index:</label>
-	<input type="number" id="port-number" name="port-number" min="0" max="1">
-	
-	<input type="checkbox" id="button0" name="button0">
-	<label for="button0">Button 0</label>
+	<input type="number" id="port-number" name="port-number" min="0" max="1" value="0">
 
-	<input type="checkbox" id="button1" name="button1">
-	<label for="button1">Button 1</label>
-
-	<input type="checkbox" id="button2" name="button2">
-	<label for="button1">Button 2</label>
-
-	<input type="checkbox" id="button3" name="button3">
-	<label for="button1">Button 3</label>
-
-	<input type="checkbox" id="button4" name="button4">
-	<label for="button1">Button 4</label>
-
-	<input type="checkbox" id="button5" name="button5">
-	<label for="button1">Button 5</label>
-
-	<input type="checkbox" id="button6" name="button6">
-	<label for="button1">Button 6</label>
-
-	<div id="display">Disconnected</div>
+	<div id="gamepad_status">No Gamepad</div>
+	<div id="gamepad_display"></div>
+	<div id="socket_display">Server Disconnected</div>
 	<button type="button" onclick="on_connect()">Connect</button>
-	<button type="button" onclick="on_send()">Send</button>
+	<button type="button" onclick="send_state_report()">Send</button>
 </body>
 </html>
