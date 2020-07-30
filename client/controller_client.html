@@ -47,11 +47,11 @@
 		}
 
 		// Encode state into a binary buffer
-		function encode_state(index) {
+		function encode_state() {
 			buffer = new ArrayBuffer(16);
 			int_buf = new Uint16Array(buffer);
 
-			int_buf[0] = index | 0x8000 // Index, command ID
+			int_buf[0] = socket.url[socket.url.length - 2] | 0x8000 // Index, command ID
 			int_buf[1] = 12 // Length
 
 			int_buf[2] = gamepad_state.axes[0] // Joystick 1 X Value
@@ -66,11 +66,9 @@
 
 		// Encode and send current controller state via Websocket
 		function send_state_report() {
-			port_input = document.getElementById("port-number")
-
 			// Only send if socket is connected and ready
 			if (socket.readyState == 1)
-				socket.send(encode_state(port_input.value))
+				socket.send(encode_state())
 		}
 
 		// Polling loop for gamepad state updates
@@ -123,9 +121,6 @@
 <body>
 	<label for="server-addr">Server address:</label>
 	<input type="url" id="server-addr" name="server-addr" pattern="ws://.+" value="ws://localhost:8000">
-
-	<label for="port-number">Index:</label>
-	<input type="number" id="port-number" name="port-number" min="0" max="1" value="0">
 
 	<div id="gamepad_status">No Gamepad</div>
 	<div id="gamepad_display"></div>
