@@ -8,7 +8,7 @@ The client webpage uses the [Javascript Gamepad API](https://developer.mozilla.o
 ## Server
 This project uses pipenv to manage dependencies. Run `pipenv install` on first clone to download and install Python dependencies.
 
-Run server script with `pipenv run python3 server/gamepad_bridge_server.py test.txt`, open client HTML in a browser.
+Run server script with `pipenv run python3 server/gamepad_bridge_server.py /dev/serial0`, replacing `/dev/serial0` with the appropriate serial UART for your system. For testing, you can add the `--dummy-serial` option to skip connecting to a physical serial port.
 
 ## Firmware
 The firmware is written to run on both [Teensy boards](https://www.pjrc.com/teensy/) via the [Teensyduino Joystick API](https://www.pjrc.com/teensy/td_joystick.html) and Arduino boards via the [Arduino XInput library](https://github.com/dmadison/ArduinoXInput). Note that the XInput library requires additional installation procedures, but can run on either Arduino or Teensy boards. Also, XInput is a Microsoft API, so boards running with the XInput library will not be detected as joysticks on Mac or Linux computers without additional software.
