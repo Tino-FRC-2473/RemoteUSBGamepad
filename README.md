@@ -32,3 +32,16 @@ Joystick2_X | 2 | Joystick 2 X Axis value
 Joystick2_Y | 2 | Joystick 2 Y Axis value
 Button_state | 2 | Bitfield indicating status of controller buttons. Bit(x) = 1 if pressed, 0 if unpressed. Bits counted from LSB.
 RESERVED | 2 | Unused, space reserved for padding to 4b alignment.
+
+### XInput Controller State Report (CID=0x81)
+Report a Windows XInput controller state from client to server/device. Message body:
+
+Field | Size (bytes) | Description 
+------------ | ------------- | -------------
+Joystick1_X | 2 | Joystick 1 X Axis value. Format as 16 bit signed integer.
+Joystick1_Y | 2 | Joystick 1 Y Axis value
+Joystick2_X | 2 | Joystick 2 X Axis value
+Joystick2_Y | 2 | Joystick 2 Y Axis value
+Button_state | 2 | Bitfield indicating status of controller buttons. Bit(x) = 1 if pressed, 0 if unpressed. Bits counted from LSB.
+Trigger_L | 1 | Trigger value, format as 8 bit unsigned integer
+Trigger_R | 1 | Trigger value, format as 8 bit unsigned integer

@@ -1,11 +1,38 @@
 #define DEVICE_INDEX 0
 #define SERIAL_PORT Serial1
+#define PIN_LED 13
 #define INT16_TO_UINT10(x) ((x) / (1 << 6) + (1 << 9))
+
+#ifdef XINPUT_INTERFACE
+#include <XInput.h>
+
+// Lookup table to translate from raw button indices to XInput button ID
+XInputControl XINPUT_BUTTON_MAP[] = {
+	BUTTON_LOGO,
+	BUTTON_A,
+	BUTTON_B,
+	BUTTON_X,
+	BUTTON_Y,
+	BUTTON_LB,
+	BUTTON_RB,
+	BUTTON_BACK,
+	BUTTON_START,
+	BUTTON_L3,
+	BUTTON_R3,
+	DPAD_UP,
+	DPAD_DOWN,
+	DPAD_LEFT,
+	DPAD_RIGHT,
+	TRIGGER_LEFT,
+	TRIGGER_RIGHT
+};
+#endif /* ifdef XINPUT_INTERFACE */
 
 enum CommandId {
 	CONNECTION_START = 0x00,
 	CONNECTION_END   = 0x01,
-	CONTROLLER_STATE = 0x80
+	CONTROLLER_STATE = 0x80,
+	XINPUT_STATE = 0x81
 };
 
 typedef struct {
@@ -20,7 +47,8 @@ typedef struct {
 	int16_t joystick2_x;
 	int16_t joystick2_y;
 	uint16_t button_state;
-	uint16_t reserved;
+	uint8_t trigger_left;
+	uint8_t trigger_right;
 } JoystickState_t;
 
 /* ============= Global Variables ============= */
@@ -32,6 +60,25 @@ JoystickState_t current_state;
  * Send the current gamepad state as USB HID report
  */
 void send_gamepad_update() {
+#ifdef XINPUT_INTERFACE
+	// Use Arduino XInput library (https://github.com/dmadison/ArduinoXInput)
+
+	XInput.setJoystick(JOY_LEFT, current_state.joystick1_x, current_state.joystick1_y);
+	XInput.setJoystick(JOY_RIGHT, current_state.joystick2_x, current_state.joystick2_y);
+
+	XInput.setTrigger(TRIGGER_LEFT, current_state.trigger_left);
+	XInput.setTrigger(TRIGGER_RIGHT, current_state.trigger_right);
+
+	for (uint8_t i = 0; i < 16; i++) {
+		XInput.setButton(XINPUT_BUTTON_MAP[i], current_state.button_state & (1 << i));
+	}
+
+	// Send values to PC
+	XInput.send();
+
+#elif defined JOYSTICK_INTERFACE
+	// Use Teensyduino Joystick (https://www.pjrc.com/teensy/td_joystick.html)
+	
 	// Need to convert joystick values from
 	// 16b signed [−32768, 32767] to 10b unsigned [0, 1023]
 	Joystick.X(INT16_TO_UINT10(current_state.joystick1_x));
@@ -49,6 +96,9 @@ void send_gamepad_update() {
 	Serial.print("Joystick2 Y: ");
 	Serial.println(INT16_TO_UINT10(current_state.joystick2_y));
 
+	Joystick.sliderLeft(4 * current_state.trigger_left);
+	Joystick.sliderRight(4 * current_state.trigger_right);
+
 	for (uint8_t i = 0; i < 16; i++) {
 		Joystick.button(i + 1, current_state.button_state & (1 << i));
 		Serial.print("Button ");
@@ -58,6 +108,7 @@ void send_gamepad_update() {
 	}
 
 	Joystick.send_now();
+#endif /* ifdef XINPUT_INTERFACE */
 }
 
 /*
@@ -76,6 +127,7 @@ bool is_header_valid(CommandHeader_t *header) {
 			break;
 
 		case CONTROLLER_STATE:
+		case XINPUT_STATE:
 			return header->length == sizeof(JoystickState_t);
 			break;
 
@@ -94,15 +146,18 @@ void handle_command(uint8_t *buf) {
 	CommandHeader_t *header = (CommandHeader_t *)buf;
 	switch (header->cid) {
 		case CONNECTION_START:
+			digitalWrite(PIN_LED, HIGH);
 			break;
 
 		case CONNECTION_END:
 			// Reset state
 			memset(&current_state, 0, sizeof(JoystickState_t));
 			send_gamepad_update();
+			digitalWrite(PIN_LED, LOW);
 			break;
 
 		case CONTROLLER_STATE:
+		case XINPUT_STATE:
 			memcpy((void *)&current_state, &header[1], sizeof(JoystickState_t));
 			send_gamepad_update();
 			break;
@@ -115,11 +170,21 @@ void handle_command(uint8_t *buf) {
 
 /* ============= Entrypoint Functions ============= */
 void setup() {
+	pinMode(PIN_LED, OUTPUT);
+	digitalWrite(PIN_LED, LOW);
 	Serial.begin(115200);
 	
 	memset(&current_state, 0, sizeof(JoystickState_t));
 	
+#ifdef JOYSTICK_INTERFACE
 	Joystick.useManualSend(true);
+#endif /* ifdef JOYSTICK_INTERFACE */
+
+#ifdef XINPUT_INTERFACE
+	XInput.setJoystickRange(INT16_MIN, INT16_MAX);
+	XInput.setTriggerRange(0, UINT8_MAX);
+#endif /* ifdef XINPUT_INTERFACE */
+
 	send_gamepad_update();
 
 	SERIAL_PORT.begin(115200);

@@ -11,6 +11,26 @@
 		};
 		var update_loop = null;
 
+		function on_disconnect() {
+			clearInterval(update_loop);
+			
+			document.getElementById('socket_display').innerText = "Server Disconnected"
+
+			if (socket.readyState == 1) {
+			    buffer = new ArrayBuffer(4);
+				int_buf = new Uint8Array(buffer);
+				url = new String(socket.url)
+				int_buf[0] = url[url.length - 2]
+				int_buf[1] = 1
+				socket.send(buffer);
+				socket.close()
+			}
+
+			button = document.getElementById("connection_button")
+			button.innerText = "Connect"
+			button.onclick = on_connect
+		}
+
 		function on_connect() {
 			address_input = document.getElementById('server-addr')
 			console.log("Connecting to " + address_input.value)
@@ -44,6 +64,10 @@
 				int_buf[1] = 1
 				event.currentTarget.send(buffer);
 			});
+
+			button = document.getElementById("connection_button")
+			button.innerText = "Disconnect"
+			button.onclick = on_disconnect
 		}
 
 		// Encode state into a binary buffer
@@ -112,9 +136,8 @@
 			console.log("Gamepad disconnected from index %d: %s",
 				e.gamepad.index, e.gamepad.id);
 
-			clearInterval(update_loop);
-			gamepad = null;
 			document.getElementById("gamepad_status").innerText = "Gamepad disconnected";
+			on_disconnect()
 		});
 	</script>
 </head>
@@ -125,7 +148,7 @@
 	<div id="gamepad_status">No Gamepad</div>
 	<div id="gamepad_display"></div>
 	<div id="socket_display">Server Disconnected</div>
-	<button type="button" onclick="on_connect()">Connect</button>
+	<button id="connection_button" type="button" onclick="on_connect()">Connect</button>
 	<button type="button" onclick="send_state_report()">Send</button>
 </body>
 </html>
