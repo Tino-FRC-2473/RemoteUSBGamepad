@@ -8,13 +8,14 @@
 
 // Lookup table to translate from raw button indices to XInput button ID
 XInputControl XINPUT_BUTTON_MAP[] = {
-	BUTTON_LOGO,
 	BUTTON_A,
 	BUTTON_B,
 	BUTTON_X,
 	BUTTON_Y,
 	BUTTON_LB,
 	BUTTON_RB,
+	TRIGGER_LEFT,
+	TRIGGER_RIGHT,
 	BUTTON_BACK,
 	BUTTON_START,
 	BUTTON_L3,
@@ -23,8 +24,6 @@ XInputControl XINPUT_BUTTON_MAP[] = {
 	DPAD_DOWN,
 	DPAD_LEFT,
 	DPAD_RIGHT,
-	TRIGGER_LEFT,
-	TRIGGER_RIGHT
 };
 #endif /* ifdef XINPUT_INTERFACE */
 
@@ -63,8 +62,8 @@ void send_gamepad_update() {
 #ifdef XINPUT_INTERFACE
 	// Use Arduino XInput library (https://github.com/dmadison/ArduinoXInput)
 
-	XInput.setJoystick(JOY_LEFT, current_state.joystick1_x, current_state.joystick1_y);
-	XInput.setJoystick(JOY_RIGHT, current_state.joystick2_x, current_state.joystick2_y);
+	XInput.setJoystick(JOY_LEFT, current_state.joystick1_x, -current_state.joystick1_y);
+	XInput.setJoystick(JOY_RIGHT, current_state.joystick2_x, -current_state.joystick2_y);
 
 	XInput.setTrigger(TRIGGER_LEFT, current_state.trigger_left);
 	XInput.setTrigger(TRIGGER_RIGHT, current_state.trigger_right);
