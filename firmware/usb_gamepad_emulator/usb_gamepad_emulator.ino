@@ -61,8 +61,8 @@ void send_gamepad_update() {
 }
 
 /*
- * Validate a received command header. Returns true if header is valid and
- * matches this device's ID, false otherwise.
+ * Validate a received command header. Returns true if header is valid,
+ * false otherwise.
  */
 bool is_header_valid(CommandHeader_t *header) {
 	// Verify command length matches with command ID
@@ -87,7 +87,8 @@ bool is_header_valid(CommandHeader_t *header) {
 }
 
 /*
- * Parse and handle command contained in the given buffer
+ * Parse and handle command contained in the given buffer. Assumes command
+ * has already been validated.
  */
 void handle_command(uint8_t *buf) {
 	CommandHeader_t *header = (CommandHeader_t *)buf;
