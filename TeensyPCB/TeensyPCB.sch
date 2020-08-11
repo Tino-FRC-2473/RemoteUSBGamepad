@@ -15,45 +15,45 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L TeensyPCB-rescue:Teensy-LC-TeensyBoards U2
+L CustomLibrary:Teensy-LC U2
 U 1 1 5F2FF675
 P 3600 2650
 F 0 "U2" H 3625 1413 60  0000 C CNN
 F 1 "Teensy-LC" H 3625 1519 60  0000 C CNN
-F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 3600 2100 60  0001 C CNN
+F 2 "CustomFootprints:Teensy30_31_32_LC_nopogo" H 3600 2100 60  0001 C CNN
 F 3 "" H 3600 2100 60  0000 C CNN
 	1    3600 2650
 	-1   0    0    1   
 $EndComp
 $Comp
-L TeensyPCB-rescue:Teensy-LC-TeensyBoards U4
+L CustomLibrary:Teensy-LC U4
 U 1 1 5F3013CB
 P 7250 2650
 F 0 "U4" H 7275 1413 60  0000 C CNN
 F 1 "Teensy-LC" H 7275 1519 60  0000 C CNN
-F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 7250 2100 60  0001 C CNN
+F 2 "CustomFootprints:Teensy30_31_32_LC_nopogo" H 7250 2100 60  0001 C CNN
 F 3 "" H 7250 2100 60  0000 C CNN
 	1    7250 2650
 	-1   0    0    1   
 $EndComp
 $Comp
-L TeensyPCB-rescue:Teensy-LC-TeensyBoards U1
+L CustomLibrary:Teensy-LC U1
 U 1 1 5F302D19
 P 3550 5350
 F 0 "U1" H 3575 6587 60  0000 C CNN
 F 1 "Teensy-LC" H 3575 6481 60  0000 C CNN
-F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 3550 4800 60  0001 C CNN
+F 2 "CustomFootprints:Teensy30_31_32_LC_nopogo" H 3550 4800 60  0001 C CNN
 F 3 "" H 3550 4800 60  0000 C CNN
 	1    3550 5350
 	1    0    0    -1  
 $EndComp
 $Comp
-L TeensyPCB-rescue:Teensy-LC-TeensyBoards U3
+L CustomLibrary:Teensy-LC U3
 U 1 1 5F312DB2
 P 7200 5350
 F 0 "U3" H 7225 6587 60  0000 C CNN
 F 1 "Teensy-LC" H 7225 6481 60  0000 C CNN
-F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 7200 4800 60  0001 C CNN
+F 2 "CustomFootprints:Teensy30_31_32_LC_nopogo" H 7200 4800 60  0001 C CNN
 F 3 "" H 7200 4800 60  0000 C CNN
 	1    7200 5350
 	1    0    0    -1  
