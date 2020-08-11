@@ -1,5 +1,6 @@
 EESchema Schematic File Version 4
-EELAYER 30 0
+LIBS:TeensyPCB-cache
+EELAYER 26 0
 EELAYER END
 $Descr USLetter 11000 8500
 encoding utf-8
@@ -14,45 +15,45 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L TeensyBoards:Teensy-LC U2
+L TeensyPCB-rescue:Teensy-LC-TeensyBoards U2
 U 1 1 5F2FF675
 P 3600 2650
 F 0 "U2" H 3625 1413 60  0000 C CNN
 F 1 "Teensy-LC" H 3625 1519 60  0000 C CNN
-F 2 "teensy:Teensy30_31_32_LC" H 3600 2100 60  0001 C CNN
+F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 3600 2100 60  0001 C CNN
 F 3 "" H 3600 2100 60  0000 C CNN
 	1    3600 2650
 	-1   0    0    1   
 $EndComp
 $Comp
-L TeensyBoards:Teensy-LC U4
+L TeensyPCB-rescue:Teensy-LC-TeensyBoards U4
 U 1 1 5F3013CB
 P 7250 2650
 F 0 "U4" H 7275 1413 60  0000 C CNN
 F 1 "Teensy-LC" H 7275 1519 60  0000 C CNN
-F 2 "teensy:Teensy30_31_32_LC" H 7250 2100 60  0001 C CNN
+F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 7250 2100 60  0001 C CNN
 F 3 "" H 7250 2100 60  0000 C CNN
 	1    7250 2650
 	-1   0    0    1   
 $EndComp
 $Comp
-L TeensyBoards:Teensy-LC U1
+L TeensyPCB-rescue:Teensy-LC-TeensyBoards U1
 U 1 1 5F302D19
 P 3550 5350
 F 0 "U1" H 3575 6587 60  0000 C CNN
 F 1 "Teensy-LC" H 3575 6481 60  0000 C CNN
-F 2 "teensy:Teensy30_31_32_LC" H 3550 4800 60  0001 C CNN
+F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 3550 4800 60  0001 C CNN
 F 3 "" H 3550 4800 60  0000 C CNN
 	1    3550 5350
 	1    0    0    -1  
 $EndComp
 $Comp
-L TeensyBoards:Teensy-LC U3
+L TeensyPCB-rescue:Teensy-LC-TeensyBoards U3
 U 1 1 5F312DB2
 P 7200 5350
 F 0 "U3" H 7225 6587 60  0000 C CNN
 F 1 "Teensy-LC" H 7225 6481 60  0000 C CNN
-F 2 "teensy:Teensy30_31_32_LC" H 7200 4800 60  0001 C CNN
+F 2 "Teensy:Teensy30_31_32_LC_nopogo" H 7200 4800 60  0001 C CNN
 F 3 "" H 7200 4800 60  0000 C CNN
 	1    7200 5350
 	1    0    0    -1  
