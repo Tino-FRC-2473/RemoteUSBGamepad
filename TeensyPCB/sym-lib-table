@@ -1,4 +1,4 @@
 (sym_lib_table
   (lib (name TeensyPCB-rescue)(type Legacy)(uri ${KIPRJMOD}/TeensyPCB-rescue.lib)(options "")(descr ""))
-  (lib (name CustomLibrary)(type Legacy)(uri /Users/sunny/Desktop/Robotics/RemoteUSBGamepad/TeensyPCB/libraries/CustomLibrary.lib)(options "")(descr ""))
+  (lib (name CustomLibrary)(type Legacy)(uri C:/Users/sohom/Projects/FRC_Remote_Driving/RemoteUSBGamepad/TeensyPCB/libraries/CustomLibrary.lib)(options "")(descr ""))
 )
