@@ -1,4 +1,4 @@
-update=8/9/2020 9:19:07 PM
+update=Friday, August 14, 2020 at 03:08:41 PM
 version=1
 last_client=kicad
 [general]
@@ -39,8 +39,13 @@ MinMicroViaDiameter=0
 MinMicroViaDrill=0
 MinHoleToHole=0.4064
 TrackWidth1=1.016
+TrackWidth2=1.7
 ViaDiameter1=2.032
 ViaDrill1=1.016
+ViaDiameter2=1.7
+ViaDrill2=1.15
+ViaDiameter3=3.048
+ViaDrill3=2.9464
 dPairWidth1=1.016
 dPairGap1=0.25
 dPairViaGap1=0.25
@@ -65,7 +70,7 @@ OthersTextSizeThickness=0.15
 OthersTextItalic=0
 OthersTextUpright=1
 SolderMaskClearance=0.05
-SolderMaskMinWidth=0
+SolderMaskMinWidth=0.25
 SolderPasteClearance=0
 SolderPasteRatio=-0
 [pcbnew/Layer.F.Cu]
@@ -241,6 +246,17 @@ Clearance=0.8128
 TrackWidth=1.016
 ViaDiameter=2.032
 ViaDrill=1.016
+uViaDiameter=0.000152
+uViaDrill=0
+dPairWidth=1.016
+dPairGap=0.25
+dPairViaGap=0.25
+[pcbnew/Netclasses/1]
+Name=Mounting Holes
+Clearance=0.8128
+TrackWidth=1.016
+ViaDiameter=3.048
+ViaDrill=2.9464
 uViaDiameter=0.000152
 uViaDrill=0
 dPairWidth=1.016
