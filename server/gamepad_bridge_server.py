@@ -4,23 +4,29 @@ import serial
 from pathlib import Path
 
 class WSServer:
-    def __init__(self, queue):
+    def __init__(self, queue, base_port):
         self.message_queue = queue
+        self.base_port = base_port
 
     async def on_receive(self, websocket, path):
-        async for message in websocket:
-            server_port = websocket.local_address[1]
-            print(server_port, "received", message, "from", websocket.remote_address[0])
+        server_port = websocket.local_address[1]
+        try:
+            async for message in websocket:
+                print(server_port, "received", message, "from", websocket.remote_address[0])
 
-            # Append the received message to the queue
-            await self.message_queue.put((server_port, message))
+                # Append the received message to the queue
+                await self.message_queue.put((server_port, message))
 
-            await websocket.send(message)
+                await websocket.send(message)
+        except Exception as e:
+            print("Unexpected connection close on port", server_port)
+        print("Issuing disconnect for port", server_port)
+        await self.message_queue.put((server_port, (server_port - self.base_port).to_bytes(1, 'little') + b"\x01\x00\x00"))
 
-    def start(self, num_controllers, base_port):
+    def start(self, num_controllers):
         for i in range(num_controllers):
-            print("Starting server on port", i + args.base_port)
-            asyncio.get_event_loop().run_until_complete(websockets.serve(self.on_receive, "", i + base_port))
+            print("Starting server on port", i + self.base_port)
+            asyncio.get_event_loop().run_until_complete(websockets.serve(self.on_receive, "", i + self.base_port))
             print("Server started")
 
 # Consumes arriving messages queue. This serializes message handling independent
@@ -55,8 +61,8 @@ if __name__ == '__main__':
 
     queue = asyncio.Queue()
     
-    server = WSServer(queue)
-    server.start(args.num_controllers, args.base_port)
+    server = WSServer(queue, args.base_port)
+    server.start(args.num_controllers)
 
     if args.dummy_serial:
         asyncio.get_event_loop().run_until_complete(dummy_queue_handler(queue))
