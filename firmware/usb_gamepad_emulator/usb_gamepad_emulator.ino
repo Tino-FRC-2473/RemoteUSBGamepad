@@ -1,6 +1,10 @@
-#define DEVICE_INDEX 0
 #define SERIAL_PORT Serial1
 #define PIN_LED 13
+// Inputs which encode the device index.
+// Uses pins between least signficant bit (LSB) and most signficant bit (MSB)
+// Note this goes in descending pin number since we want LSB on the right
+#define PIN_INDEX_LSB 5
+#define PIN_INDEX_MSB 2
 #define INT16_TO_UINT10(x) ((x) / (1 << 6) + (1 << 9))
 
 #ifdef XINPUT_INTERFACE
@@ -52,6 +56,7 @@ typedef struct {
 
 /* ============= Global Variables ============= */
 JoystickState_t current_state;
+uint8_t device_index;
 
 /* ============= Local Functions ============= */
 
@@ -143,6 +148,8 @@ bool is_header_valid(CommandHeader_t *header) {
  */
 void handle_command(uint8_t *buf) {
 	CommandHeader_t *header = (CommandHeader_t *)buf;
+	if (header->index != device_index)
+		return;
 	switch (header->cid) {
 		case CONNECTION_START:
 			digitalWrite(PIN_LED, HIGH);
@@ -187,6 +194,29 @@ void setup() {
 	send_gamepad_update();
 
 	SERIAL_PORT.begin(115200);
+
+	// Set device index
+	device_index = 0;
+	for (uint8_t i = 0; i <= PIN_INDEX_LSB - PIN_INDEX_MSB; i++) {
+		pinMode(PIN_INDEX_LSB - i, INPUT_PULLUP);
+		if (digitalRead(PIN_INDEX_LSB - i) == LOW)
+			device_index |= 1 << i;
+	}
+
+
+
+	// Flash LED to show boot complete, then indicate device index
+	digitalWrite(PIN_LED, HIGH);
+	delay(500);
+	digitalWrite(PIN_LED, LOW);
+
+	for (uint8_t i = 0; i < device_index; i++) {
+		delay(200);
+		digitalWrite(PIN_LED, HIGH);
+		delay(200);
+		digitalWrite(PIN_LED, LOW);
+	}
+	Serial.println(device_index);
 }
 
 void loop() {
