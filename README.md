@@ -3,7 +3,7 @@ Bridge USB gamepad over IP to enable FTC remote operation
 
 # Setup
 ## Client
-Access the client page at https://tino-frc-2473.github.io/RemoteUSBGamepad/client/controller_client.html
+Download the <a href="https://raw.githubusercontent.com/Tino-FRC-2473/RemoteUSBGamepad/master/client/controller_client.html" download>client page</a> (right click -> Save As) and open in a browser. Live hosted page is WIP, needs handling of HTTPS requirements.
 
 The client webpage uses the [Javascript Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API), which is sufficiently supported by most modern browsers. Enter the address and port of the server you wish to connect to, then press the Connect button to establish a connection. Then connect a gamepad to your computer and press some buttons so the browser can detect it. If you are using the Logitech F310 controller, make sure the switch on the back is set to "D" before plugging it into your computer.
 
