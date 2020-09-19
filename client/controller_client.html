@@ -12,8 +12,6 @@
 		var update_loop = null;
 
 		function on_disconnect() {
-			clearInterval(update_loop);
-			
 			document.getElementById('socket_display').innerText = "Server Disconnected"
 
 			if (socket.readyState == 1) {
@@ -137,6 +135,7 @@
 				e.gamepad.index, e.gamepad.id);
 
 			document.getElementById("gamepad_status").innerText = "Gamepad disconnected";
+			clearInterval(update_loop);
 			on_disconnect()
 		});
 	</script>
