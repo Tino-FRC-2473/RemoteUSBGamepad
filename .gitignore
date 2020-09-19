@@ -152,6 +152,11 @@ fp-info-cache
 *.dsn
 *.ses
 
+# Keys
+*.key
+*.crt
+*.pem
+
 *~
 *#
 .DS_Store

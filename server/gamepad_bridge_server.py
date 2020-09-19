@@ -2,6 +2,7 @@ import asyncio
 import websockets
 import serial
 import time
+import ssl
 from pathlib import Path
 
 TIME_FORMAT = "[%Y-%m-%d %H:%M:%S]"
@@ -63,6 +64,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     queue = asyncio.Queue()
+
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    localhost_pem = Path("https.pem")
+    ssl_context.load_cert_chain(localhost_pem)
     
     server = WSServer(queue, args.base_port)
     server.start(args.num_controllers)
