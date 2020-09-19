@@ -66,7 +66,7 @@ if __name__ == '__main__':
     queue = asyncio.Queue()
 
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    localhost_pem = Path("https.pem")
+    localhost_pem = Path("cert.pem")
     ssl_context.load_cert_chain(localhost_pem)
     
     server = WSServer(queue, args.base_port)

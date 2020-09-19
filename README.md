@@ -22,7 +22,7 @@ This project uses pipenv to manage dependencies. Run `pipenv install` on first c
 
 Run server script with `pipenv run python3 server/gamepad_bridge_server.py /dev/serial0`, replacing `/dev/serial0` with the appropriate serial UART for your system. For testing, you can add the `--dummy-serial` option to skip connecting to a physical serial port.
 
-Before first run, generate SSL certificate with `openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out https.crt -keyout https.key` and `openssl x509 -in https.crt -out https.pem`
+Before first run, generate SSL certificate with `openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem`
 
 ## Firmware
 The firmware is written to run on both [Teensy boards](https://www.pjrc.com/teensy/) via the [Teensyduino Joystick API](https://www.pjrc.com/teensy/td_joystick.html) and Arduino boards via the [Arduino XInput library](https://github.com/dmadison/ArduinoXInput). Note that the XInput library requires additional installation procedures, but can run on either Arduino or Teensy boards. Also, XInput is a Microsoft API, so boards running with the XInput library will not be detected as joysticks on Mac or Linux computers without additional software.
