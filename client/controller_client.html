@@ -10,6 +10,8 @@
 			axes : [0, 0, 0, 0],
 		};
 		var update_loop = null;
+		var last_packet_timestamp = 0;
+		var ping = 0;
 
 		function on_disconnect() {
 			document.getElementById('socket_display').innerText = "Server Disconnected"
@@ -41,6 +43,7 @@
 				url = new String(event.currentTarget.url)
 				int_buf[0] = url[url.length - 2]
 				event.currentTarget.send(buffer);
+				last_packet_timestamp = Date.now()
 
 				document.getElementById('socket_display').innerText = "Server Connected!"
 			});
@@ -48,6 +51,7 @@
 			// Listen for messages
 			socket.addEventListener('message', function (event) {
 			    //console.log('Message from server ', event.data);
+			    ping = Date.now() - last_packet_timestamp
 			});
 
 			// Listen for socket closure
@@ -89,8 +93,10 @@
 		// Encode and send current controller state via Websocket
 		function send_state_report() {
 			// Only send if socket is connected and ready
-			if (socket.readyState == 1)
+			if (socket.readyState == 1) {
 				socket.send(encode_state())
+				last_packet_timestamp = Date.now()
+			}
 		}
 
 		// Polling loop for gamepad state updates
