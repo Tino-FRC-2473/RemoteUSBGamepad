@@ -3,9 +3,19 @@ Bridge USB gamepad over IP to enable FTC remote operation
 
 # Setup
 ## Client
-Download the <a href="https://raw.githubusercontent.com/Tino-FRC-2473/RemoteUSBGamepad/master/client/controller_client.html" download>client page</a> (right click -> Save As) and open in a browser. Live hosted page is WIP, needs handling of HTTPS requirements.
+Download the <a href="https://raw.githubusercontent.com/Tino-FRC-2473/RemoteUSBGamepad/master/client/controller_client.html" download>client page</a> (right click -> Save As) and open in a browser.  The client webpage uses the [Javascript Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API), which is sufficiently supported by most modern browsers. 
 
-The client webpage uses the [Javascript Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API), which is sufficiently supported by most modern browsers. Enter the address and port of the server you wish to connect to, then press the Connect button to establish a connection. Then connect a gamepad to your computer and press some buttons so the browser can detect it. If you are using the Logitech F310 controller, make sure the switch on the back is set to "D" before plugging it into your computer.
+1. Enter the address and port of the server you wish to connect to.
+
+![Client Start](docs/client_start.png)
+
+2. Then connect a gamepad to your computer and press some buttons so the browser can detect it. If you are using the Logitech F310 controller, make sure the switch on the back is set to "D" before plugging it into your computer.
+
+![Client Gamepad Connected](docs/client_gamepad_connected.png)
+
+3. Press the Connect button to establish connection to the server
+
+![Client Server Connected](docs/client_server_connected.png)
 
 ## Server
 This project uses pipenv to manage dependencies. Run `pipenv install` on first clone to download and install Python dependencies.
