@@ -1,7 +1,10 @@
 import asyncio
 import websockets
 import serial
+import time
 from pathlib import Path
+
+TIME_FORMAT = "[%Y-%m-%d %H:%M:%S]"
 
 class WSServer:
     def __init__(self, queue, base_port):
@@ -12,39 +15,39 @@ class WSServer:
         server_port = websocket.local_address[1]
         try:
             async for message in websocket:
-                print(server_port, "received", message, "from", websocket.remote_address[0])
+                print(time.strftime(TIME_FORMAT), server_port, "received from", websocket.remote_address[0], "0x" + message.hex())
 
                 # Append the received message to the queue
                 await self.message_queue.put((server_port, message))
 
                 await websocket.send(message)
         except Exception as e:
-            print("Unexpected connection close on port", server_port)
-        print("Issuing disconnect for port", server_port)
+            print(time.strftime(TIME_FORMAT), server_port, "Unexpected connection close", )
+        print(time.strftime(TIME_FORMAT), server_port, "Issuing disconnect", )
         await self.message_queue.put((server_port, (server_port - self.base_port).to_bytes(1, 'little') + b"\x01\x00\x00"))
 
     def start(self, num_controllers):
         for i in range(num_controllers):
-            print("Starting server on port", i + self.base_port)
+            print(time.strftime(TIME_FORMAT), "Starting server on port", i + self.base_port)
             asyncio.get_event_loop().run_until_complete(websockets.serve(self.on_receive, "", i + self.base_port))
-            print("Server started")
+            print(time.strftime(TIME_FORMAT), "Server started")
 
 # Consumes arriving messages queue. This serializes message handling independent
 # of the server threads, to avoid races over the serial output
 async def queue_handler(queue, serial_port, baud=115200):
-    print("queue_handler started")
+    print(time.strftime(TIME_FORMAT), "queue_handler started")
     with serial.Serial(serial_port, 115200, timeout=1) as ser:
         while True:
             index, message = await queue.get()
-            print("Dequeued message", message, "for index", index)
+            # print("Dequeued message", message, "for index", index)
             ser.write(message)
             queue.task_done()
 
 async def dummy_queue_handler(queue):
-    print("queue_handler started")
+    print(time.strftime(TIME_FORMAT), "queue_handler started")
     while True:
         index, message = await queue.get()
-        print("Dequeued message", message, "for index", index)
+        print(time.strftime(TIME_FORMAT), "Dequeued message", "0x" + message.hex(), "for index", index)
         queue.task_done()
 
 if __name__ == '__main__':
