@@ -1,4 +1,4 @@
-update=Sunday, November 01, 2020 at 10:47:24 AM
+update=Sunday, November 01, 2020 at 02:06:14 PM
 version=1
 last_client=pcbnew
 [general]
@@ -22,12 +22,12 @@ AllowMicroVias=0
 AllowBlindVias=0
 RequireCourtyardDefinitions=0
 ProhibitOverlappingCourtyards=1
-MinTrackWidth=0.1524
+MinTrackWidth=0.2032
 MinViaDiameter=0.508
 MinViaDrill=0.254
 MinMicroViaDiameter=0
 MinMicroViaDrill=0
-MinHoleToHole=0.25
+MinHoleToHole=0.508
 TrackWidth1=1.016
 TrackWidth2=1.7
 ViaDiameter1=0.6858
@@ -232,7 +232,7 @@ Enabled=0
 [pcbnew/Netclasses]
 [pcbnew/Netclasses/Default]
 Name=Default
-Clearance=0.1524
+Clearance=0.2032
 TrackWidth=1.016
 ViaDiameter=0.6858
 ViaDrill=0.3302
