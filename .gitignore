@@ -152,6 +152,9 @@ fp-info-cache
 *.dsn
 *.ses
 
+# Documentation Source Files
+docs/block_diagram
+
 *~
 *#
 .DS_Store
