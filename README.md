@@ -25,7 +25,7 @@ This project uses pipenv to manage dependencies. Run `pipenv install` on first c
 Run server script with `pipenv run python3 server/gamepad_bridge_server.py /dev/serial0`, replacing `/dev/serial0` with the appropriate serial UART for your system. For testing, you can add the `--dummy-serial` option to skip connecting to a physical serial port.
 
 # Firmware
-The firmware is written to run on both [Teensy boards](https://www.pjrc.com/teensy/) via the [Teensyduino Joystick API](https://www.pjrc.com/teensy/td_joystick.html) and Arduino boards via the [Arduino XInput library](https://github.com/dmadison/ArduinoXInput). Note that the XInput library requires additional installation procedures, but can run on either Arduino or Teensy boards. Also, XInput is a Microsoft API, so boards running with the XInput library will not be detected as joysticks on Mac or Linux computers without additional software.
+The firmware is written to run on both [Teensy boards](https://www.pjrc.com/teensy/) via the [Teensyduino Joystick API](https://www.pjrc.com/teensy/td_joystick.html) and Arduino boards via the [Arduino XInput library](https://github.com/dmadison/ArduinoXInput). Note that the XInput library requires additional installation procedures, but can run on either Arduino or Teensy boards. Also, XInput is a Microsoft API, so boards running with the XInput library will not be detected as joysticks on Mac or Linux computers without additional software. On an Android phone running the driver station app, XInput devices will appear as Xbox 360 controllers.
 
 # Teensy Carrier Board
 ![Server Hardware](docs/server_hardware.jpg)
