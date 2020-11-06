@@ -1,8 +1,10 @@
 # RemoteUSBGamepad
-Bridge USB gamepad over IP to enable FTC remote operation
 
-# Setup
-## Client
+![Block Diagram](docs/block_diagram.jpg)
+
+Bridge USB gamepads over IP to enable FTC remote operation
+
+# Client
 Download the <a href="https://raw.githubusercontent.com/Tino-FRC-2473/RemoteUSBGamepad/master/client/controller_client.html" download>client page</a> (right click -> Save As) and open in a browser.  The client webpage uses the [Javascript Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API), which is sufficiently supported by most modern browsers. 
 
 1. Enter the address and port of the server you wish to connect to.
@@ -17,13 +19,18 @@ Download the <a href="https://raw.githubusercontent.com/Tino-FRC-2473/RemoteUSBG
 
 ![Client Server Connected](docs/client_server_connected.png)
 
-## Server
+# Server
 This project uses pipenv to manage dependencies. Run `pipenv install` on first clone to download and install Python dependencies.
 
 Run server script with `pipenv run python3 server/gamepad_bridge_server.py /dev/serial0`, replacing `/dev/serial0` with the appropriate serial UART for your system. For testing, you can add the `--dummy-serial` option to skip connecting to a physical serial port.
 
-## Firmware
+# Firmware
 The firmware is written to run on both [Teensy boards](https://www.pjrc.com/teensy/) via the [Teensyduino Joystick API](https://www.pjrc.com/teensy/td_joystick.html) and Arduino boards via the [Arduino XInput library](https://github.com/dmadison/ArduinoXInput). Note that the XInput library requires additional installation procedures, but can run on either Arduino or Teensy boards. Also, XInput is a Microsoft API, so boards running with the XInput library will not be detected as joysticks on Mac or Linux computers without additional software.
+
+# Teensy Carrier Board
+![Server Hardware](docs/server_hardware.jpg)
+
+The Teensys listen for incoming command on a common serial bus. To simplify connecting all the RX lines together to the Raspberry Pi's serial TX, we designed a simple carrier board. The first design is a single-sided prototype suitable for milling on a desktop CNC machine. Each board holds four Teensy LCs, with headers for ground and serial RX. Note that the Teensys receive power via USB, but share a common ground with the Raspberry Pi. A second set of headers allows these boards to be daisy chained to easily add additional Teensys. The address or device index for each Teensy is programmed using a set of jumpers selective pulling down GPIO pins 2-5. Each Teensy reads its ID as a binary coded number on boot based on the jumper configuration.
 
 # Protocol
 The same binary message format will be used over the Websocket and serial connection. We shall use little-endian byte order to match the Arduino/ARM processor convention. All messages start with the following header:
