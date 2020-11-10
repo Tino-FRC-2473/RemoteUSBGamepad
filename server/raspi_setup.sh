@@ -12,6 +12,9 @@ sudo reboot
 # Packages
 sudo apt install -y git vim pipenv tmux
 
+# Set timezone
+sudo timedatectl set-timezone America/Los_Angeles
+
 # Setup RemoteUSBGamepad
 git clone https://github.com/Tino-FRC-2473/RemoteUSBGamepad.git
 pushd RemoteUSBGamepad
