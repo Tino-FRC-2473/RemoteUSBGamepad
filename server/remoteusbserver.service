@@ -1,0 +1,14 @@
+[Unit]
+Description=Remote USB Server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/pipenv run python3 -u /home/pi/RemoteUSBGamepad/server/gamepad_bridge_server.py /dev/serial0
+WorkingDirectory=/home/pi/RemoteUSBGamepad/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
