@@ -13,6 +13,15 @@
 		var last_packet_timestamp = 0;
 		var ping = 0;
 
+		function debug_log(arg) {
+			console.log(arg)
+			if (document.getElementById('debug_enable').checked) {
+				date = new Date()
+				debug_display.innerText += date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+				debug_display.innerText += ' ' + arg + '\n'
+			}
+		}
+
 		function on_disconnect() {
 			document.getElementById('socket_display').innerText = "Server Disconnected"
 
@@ -33,7 +42,7 @@
 
 		function on_connect() {
 			address_input = document.getElementById('server-addr')
-			console.log("Connecting to " + address_input.value)
+			debug_log("Connecting to " + address_input.value)
 			socket = new WebSocket(address_input.value);
 
 			// Connection opened
@@ -50,13 +59,14 @@
 
 			// Listen for messages
 			socket.addEventListener('message', function (event) {
-			    //console.log('Message from server ', event.data);
+			    //debug_log('Message from server ', event.data);
 			    ping = Date.now() - last_packet_timestamp
+			    document.getElementById("ping_display").innerText = ping + "ms"
 			});
 
 			// Listen for socket closure
 			socket.addEventListener('onclose', function (event) {
-			    console.log("Socket " + socket.url + " closed")
+			    debug_log("Socket " + socket.url + " closed")
 			    document.getElementById('socket_display').innerText = "Server Disconnected"
 
 			    buffer = new ArrayBuffer(4);
@@ -96,6 +106,26 @@
 			if (socket.readyState == 1) {
 				socket.send(encode_state())
 				last_packet_timestamp = Date.now()
+			} else {
+				debug_log("Socket is not ready, readyState=" + socket.readyState)
+			}
+		}
+
+		function verify_gamepad_state(gamepad) {
+			var button_state = 0
+			for (var i = 0; i < 16; i++) {
+				if (gamepad.buttons[i].value == 1) {
+					button_state |= 1 << i
+				}
+			}
+			if (button_state != gamepad_state.button_state) {
+				debug_log("Mismatch button state despite same timestamp")
+			}
+
+			for (var i = 0; i < 4; i++) {
+				if (gamepad_state.axes[i] != Math.floor(gamepad.axes[i] * 32767)) {
+					debug_log("Mismatch axes state despite same timestamp")
+				}
 			}
 		}
 
@@ -103,8 +133,10 @@
 		function poll_gamepad() {
 			var gamepad = navigator.getGamepads()[0];
 
-			if (gamepad.timestamp == gamepad_state.last_update_time)
+			if (gamepad.timestamp == gamepad_state.last_update_time) {
+				verify_gamepad_state(gamepad);
 				return;
+			}
 
 			gamepad_state.last_update_time = gamepad.timestamp;
 
@@ -126,9 +158,7 @@
 
 		// Gamepad Setup
 		window.addEventListener("gamepadconnected", function(e) {
-			console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
-				e.gamepad.index, e.gamepad.id,
-				e.gamepad.buttons.length, e.gamepad.axes.length);
+			debug_log("Gamepad connected at index " + e.gamepad.index + ": " + e.gamepad.id + ". " + e.gamepad.buttons.length + " buttons, " + e.gamepad.axes.length + " axes.")
 
 			document.getElementById("gamepad_status").innerText = "Gamepad connected!";
 
@@ -137,8 +167,7 @@
 		});
 
 		window.addEventListener("gamepaddisconnected", function(e) {
-			console.log("Gamepad disconnected from index %d: %s",
-				e.gamepad.index, e.gamepad.id);
+			debug_log("Gamepad disconnected from index " + e.gamepad.index + ": " + e.gamepad.id)
 
 			document.getElementById("gamepad_status").innerText = "Gamepad disconnected";
 			clearInterval(update_loop);
@@ -152,8 +181,10 @@
 
 	<div id="gamepad_status">No Gamepad</div>
 	<div id="gamepad_display"></div>
-	<div id="socket_display">Server Disconnected</div>
+	<div id="socket_display">Server Disconnected</div><div id="ping_display"></div>
 	<button id="connection_button" type="button" onclick="on_connect()">Connect</button>
-	<button type="button" onclick="send_state_report()">Send</button>
+	<button type="button" onclick="send_state_report()">Send</button></br>
+	<input type="checkbox" id="debug_enable">Debug mode</input>
+	<div id="debug_display"></div>
 </body>
 </html>
