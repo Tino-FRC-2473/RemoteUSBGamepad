@@ -3,6 +3,8 @@
 <head>
 	<title>Remote USB Gamepad Client</title>
 	<script>
+		var tx_message_count = 0
+		var rx_message_count = 0
 		var socket = null;
 		var gamepad_state = {
 			last_update_time : 0,
@@ -51,6 +53,8 @@
 				int_buf = new Uint32Array(buffer);
 				url = new String(event.currentTarget.url)
 				int_buf[0] = url[url.length - 2]
+				tx_message_count = 1
+				rx_message_count = 0
 				event.currentTarget.send(buffer);
 				last_packet_timestamp = Date.now()
 
@@ -61,7 +65,9 @@
 			socket.addEventListener('message', function (event) {
 			    //debug_log('Message from server ', event.data);
 			    ping = Date.now() - last_packet_timestamp
-			    document.getElementById("ping_display").innerText = ping + "ms"
+			    document.getElementById("ping_display").innerText = "Ping: " + ping + "ms"
+			    rx_message_count += 1
+			    document.getElementById("message_count").innerText = "Sent: " + tx_message_count + " ACK'd: " + rx_message_count + " nACK'd: " + (tx_message_count - rx_message_count)
 			});
 
 			// Listen for socket closure
@@ -105,6 +111,7 @@
 			// Only send if socket is connected and ready
 			if (socket.readyState == 1) {
 				socket.send(encode_state())
+				tx_message_count += 1
 				last_packet_timestamp = Date.now()
 			} else {
 				debug_log("Socket is not ready, readyState=" + socket.readyState)
@@ -185,6 +192,7 @@
 	<button id="connection_button" type="button" onclick="on_connect()">Connect</button>
 	<button type="button" onclick="send_state_report()">Send</button></br>
 	<input type="checkbox" id="debug_enable">Debug mode</input>
+	<div id="message_count"></div>
 	<div id="debug_display"></div>
 </body>
 </html>
